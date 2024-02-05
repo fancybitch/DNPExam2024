@@ -1,0 +1,59 @@
+@page "/CreatePlayer"
+@inject PlayerService PlayerService
+@using Blazor.Domain.Models
+<h3>CreatePlayer</h3>
+
+<form>
+    <label for="name">Name:</label>
+    <input type="text" id="name" @bind="player.Name" />
+
+    <label for="age">Age:</label>
+    <input type="number" id="age" @bind="player.Age" />
+
+   <div class="form-group field">
+               <label>Phone:</label>
+               <input type="text" @bind="player.Phone" @bind:event="oninput"/>
+           </div>
+           <div class="form-group field">
+               <label>Membership Fee:</label>
+               <input type="text" @bind="player.MembershipFee" @bind:event="oninput"/>
+           </div>
+           <div class="form-group field">
+               <label>Membership Type:</label>
+               <input type="text" @bind="player.MembershipType" @bind:event="oninput"/>
+           </div>
+           @if (!string.IsNullOrEmpty(resultMsg))
+           {
+               <label>@resultMsg</label>
+           }
+
+
+    <div class="button-row">
+                <button @onclick="Create" disabled="@(string.IsNullOrEmpty(player.Name) || string.IsNullOrEmpty(player.Phone) ||  string.IsNullOrEmpty(player.MembershipType))" class="acceptbtn">Create</button>
+            </div>
+        
+
+</form>
+
+@code {
+    private Player player = new Player();
+    private string resultMsg = "";
+
+    private async Task Create()
+    {
+        resultMsg = "";
+
+        try
+        {
+            PlayerService.AddPlayer(player);
+            resultMsg = "User successfully created";
+            
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            resultMsg = e.Message;
+            
+        }
+    }
+}

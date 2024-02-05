@@ -1,0 +1,56 @@
+@page "/AddHoleScoring"
+@using Blazor.Domain.Models
+@inject HoleScoreService HoleScoreService
+<h3>AddHoleScoring</h3>
+<label for="playerDropdown">Select Player:</label>
+<select id="playerDropdown" @bind="selectedPlayer">
+    <option value="">Select a player</option>
+    @foreach (var playerName in GetDistinctPlayerNames())
+    {
+        <option value="@playerName">@playerName</option>
+    }
+</select>
+
+@if (!string.IsNullOrEmpty(selectedPlayer))
+{
+    <h4>Hole Scores for @selectedPlayer</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>Hole ID</th>
+                <th>Round ID</th>
+                <th>Number of Strikes</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var holeScore in GetHoleScoresForPlayer(selectedPlayer))
+            {
+                <tr>
+                    <td>@holeScore.HoleId</td>
+                    <td>@holeScore.RoundId</td>
+                    <td>@holeScore.NumOfStrikes</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private string selectedPlayer = "";
+    private List<HoleScore> holeScores;
+
+    protected override void OnInitialized()
+    {
+        holeScores = HoleScoreService.GetHoleScores();
+    }
+
+    private IEnumerable<string> GetDistinctPlayerNames()
+    {
+        return holeScores.Select(hs => hs.PlayerName).Distinct();
+    }
+
+    private IEnumerable<HoleScore> GetHoleScoresForPlayer(string playerName)
+    {
+        return holeScores.Where(hs => hs.PlayerName == playerName);
+    }
+}
